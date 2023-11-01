@@ -252,10 +252,15 @@ const generatePdfFromImages = images => {
   }); // Creates a PDF and opens it in a new browser tab.
 
   const pdfURL = doc.output("bloburl");
-  const filename = "your_filename_here.pdf"; // Replace with your desired filename
-  
-  const newWindow = window.open(pdfURL, "_blank");
-  newWindow.document.title = filename;
+
+// Create a temporary anchor element to trigger the download
+const downloadLink = document.createElement("a");
+downloadLink.href = pdfURL;
+downloadLink.download = document.title + ".pdf"; // Use the HTML title as the file name
+
+// Trigger the click event on the download link
+downloadLink.click();
+
   
 };
 
