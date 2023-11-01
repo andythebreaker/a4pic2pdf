@@ -1,18 +1,23 @@
 const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
+const fs_ = require('fs').promises;
 
-// Set the initial file count
-let initialFileCount = 0;
-
-// Function to get the current file count in the directory
-function getCurrentFileCount(outputLocationDir) {
-    const files = fs.readdirSync(outputLocationDir);
-    console.log(files.length)
-    return files.length;
-};
+async function getCurrentFileCount(outputLocationDir) {
+    try {
+        const files = await fs_.readdir(outputLocationDir);
+        console.log(files.length);
+        return files.length;
+    } catch (error) {
+        console.error('An error occurred:', error);
+        return -1; // or any suitable error handling
+    }
+}
 
 async function main(filesToUpload, outputLocationDir, pdfFilename) {
+    console.log('start')
+    // Set the initial file count
+    let initialFileCount = await getCurrentFileCount(outputLocationDir);
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
@@ -49,7 +54,7 @@ async function main(filesToUpload, outputLocationDir, pdfFilename) {
     // Check for the new PDF file in the output directory
     let pdfFilePath;
     while (true) {
-        const currentFileCount = getCurrentFileCount(outputLocationDir);
+        const currentFileCount = await getCurrentFileCount(outputLocationDir);
         if (currentFileCount > initialFileCount) {
             break;
         }

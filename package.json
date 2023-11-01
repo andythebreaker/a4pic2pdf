@@ -1,6 +1,6 @@
 {
   "name": "a4pic2pdf",
-  "version": "0.0.2",
+  "version": "1.0.1",
   "description": "gen. pdf from pic.s input by usr.",
   "main": "index.js",
   "scripts": {
@@ -25,5 +25,8 @@
   "dependencies": {
     "chai": "^4.3.10",
     "puppeteer": "^21.4.1"
+  },
+  "devDependencies": {
+    "a4pic2pdf": "^0.0.3"
   }
 }

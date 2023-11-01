@@ -1,23 +1,27 @@
-const chai = require('chai');
-const expect = chai.expect;
-const findUnusedPort = require('./index.js'); // Replace 'your-module' with the actual path to your module
+const path = require('path');
+const fs = require('fs');
 
-describe('findUnusedPort', function () {
-    it('should return an unused port', function (done) {
-        findUnusedPort(39487, 50000, (err, port) => {
-            expect(err).to.be.null;
-            expect(port).to.be.a('number');
-            expect(port).to.be.within(39487, 50000);
-            done();
-        });
-    });
+const a4pic2pdf = require('./index');
 
-    it('should return an error if all ports in the range are in use', function (done) {
-        // Replace this test case with a specific scenario that generates an error
-        findUnusedPort(39487, 39488, (err, port) => {
-            expect(err).to.exist;
-            expect(port).to.be.undefined;
-            done();
-        });
-    });
-});
+// Check if there are enough command line arguments
+if (process.argv.length < 5) {
+    console.log('Usage: node script.js imgInputDir outputDir pdfFilename');
+    process.exit(1);
+}
+
+// Get the command line arguments
+const imgInputDir = process.argv[2];
+const outputDir = process.argv[3];
+const pdfFilename = process.argv[4];
+
+// Filter and select only files with the specified extensions
+const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webm'];
+const filesToUpload = fs.readdirSync(imgInputDir)
+    .filter(file => allowedExtensions.includes(path.extname(file).toLowerCase()))
+    .map(file => path.join(imgInputDir, file));
+
+const outputLocationDir = path.join(process.cwd(), outputDir);
+
+a4pic2pdf(filesToUpload, outputLocationDir, pdfFilename);
+
+  
