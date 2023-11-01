@@ -1,11 +1,19 @@
 const puppeteer = require('puppeteer');
+const path = require('path');
+
 
 (async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
+// Set the download directory to the current directory
+const outputPath = path.join(process.cwd(), 'output');
 
   await page.goto('https://andythebreaker.github.io/a4pic2pdf/');
-
+  const client = await page.target().createCDPSession()
+  await client.send('Page.setDownloadBehavior', {
+    behavior: 'allow',
+    downloadPath: outputPath,
+  })
   const inputSelector = 'input[type="file"]';
 
   const [fileInput] = await page.$$(inputSelector);
