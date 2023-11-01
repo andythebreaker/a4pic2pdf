@@ -22,10 +22,30 @@ const puppeteer = require('puppeteer');
     if (button.length > 0) {
       await button[0].click();
       console.log('Generate PDF button clicked.');
+
+      // Wait for the PDF to be generated
+      await page.waitForTimeout(3000);
+
+      // Get the URL of the generated PDF
+      const pdfUrl = await page.evaluate(() => {
+        return document.querySelector('a[href$=".pdf"]').getAttribute('href');
+      });
+
+      // Open the PDF in a new tab
+      const newPage = await browser.newPage();
+      await newPage.goto(pdfUrl);
+      
+      // Download the PDF to the 'output' directory
+      const pdfFileName = pdfUrl.substring(pdfUrl.lastIndexOf('/') + 1);
+      await newPage.pdf({ path: `output/${pdfFileName}`, format: 'A4' });
+
+      console.log(`PDF downloaded to 'output/${pdfFileName}'`);
     } else {
       console.error('Generate PDF button not found.');
     }
   } else {
     console.error('File input not found.');
   }
+
+  await browser.close();
 })();
