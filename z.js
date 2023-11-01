@@ -25,6 +25,10 @@ const outputPath = path.join(process.cwd(), 'output');
 
     console.log('Images uploaded.');
 
+    await page.evaluate(() => {
+      document.title = 'newpdftitle';
+    });
+
     // Locate the "Generate PDF" button and click it
     const button = await page.$x("//button[contains(., 'Generate PDF')]");
     if (button.length > 0) {

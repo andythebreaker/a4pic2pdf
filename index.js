@@ -1,62 +1,47 @@
-const net = require('net');
-const util = require('util');
 const puppeteer = require('puppeteer');
-const installpubhtmlIfNotInstalled = require('./pubhtmlinstall');
+const path = require('path');
 
-// Promisify the findUnusedPort_ function
-const findUnusedPort_ = (startPort, endPort, callback) => {
-    let currentPort = startPort;
+async function main(filesToUpload, outputLocationDir, pdfFilename) {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
 
-    function tryPort(port) {
-        const server = net.createServer();
-        server.on('error', (err) => {
-            if (err.code === 'EADDRINUSE') {
-                // Port is in use, try the next one
-                server.close();
-                tryPort(port + 1);
-            } else {
-                // An error occurred, pass it to the callback
-                callback(err);
-            }
-        });
-        server.listen(port, () => {
-            // Port is available
-            server.close(() => {
-                callback(null, port);
-            });
-        });
+  await page.goto('https://andythebreaker.github.io/a4pic2pdf/');
+  const client = await page.target().createCDPSession()
+  await client.send('Page.setDownloadBehavior', {
+    behavior: 'allow',
+    downloadPath: outputLocationDir,
+  })
+  const inputSelector = 'input[type="file"]';
+
+  const [fileInput] = await page.$$(inputSelector);
+
+  if (fileInput) {
+    await fileInput.uploadFile(...filesToUpload);
+
+    console.log('Images uploaded.');
+
+    await page.evaluate(newPdfTitle => {
+      document.title = newPdfTitle;
+    }, pdfFilename);
+
+    const button = await page.$x("//button[contains(., 'Generate PDF')]");
+    if (button.length > 0) {
+      await button[0].click();
+      console.log('Generate PDF button clicked.');
+    } else {
+      console.error('Generate PDF button not found.');
     }
+  } else {
+    console.error('File input not found.');
+  }
 
-    tryPort(currentPort);
-};
+  await page.waitForTimeout(5000); // Wait for PDF generation to complete (adjust as needed)
 
-const findUnusedPort = util.promisify(findUnusedPort_);
-
-async function main() {
-    await installpubhtmlIfNotInstalled();
-
-    const port = await findUnusedPort(30000, 40000);
-    console.log(port);
-
-    // const browser = await puppeteer.launch();
-    // try {
-    //     const page = await browser.newPage();
-
-    //     // Specify the URL of the web page you want to load
-    //     const url = 'https://example.com';
-
-    //     await page.goto(url);
-
-    //     // You can now interact with the loaded page, take screenshots, or perform other actions
-
-    //     // For example, you can take a screenshot of the page
-    //     await page.screenshot({ path: 'screenshot.png' });
-    // } catch (error) {
-    //     console.error('An error occurred:', error);
-    // } finally {
-    //     await browser.close();
-    // }
+  await browser.close();
 }
 
-module.exports = main;
+const filesToUpload = ['./img/1.jpg', './img/2.jpg'];
+const outputLocationDir = path.join(process.cwd(), 'output'); // Change this to your desired output location directory
+const pdfFilename = '000ftitl'; // Change this to your desired PDF filename
 
+main(filesToUpload, outputLocationDir, pdfFilename);
