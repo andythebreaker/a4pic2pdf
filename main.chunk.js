@@ -252,7 +252,11 @@ const generatePdfFromImages = images => {
   }); // Creates a PDF and opens it in a new browser tab.
 
   const pdfURL = doc.output("bloburl");
-  window.open(pdfURL, "_blank");
+  const filename = "your_filename_here.pdf"; // Replace with your desired filename
+  
+  const newWindow = window.open(pdfURL, "_blank");
+  newWindow.document.title = filename;
+  
 };
 
 function App() {
