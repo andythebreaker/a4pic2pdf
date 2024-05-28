@@ -160,7 +160,7 @@
 
                                 // You can save the merged image or display it on the page
 
-                                canvas.toBlob(blob => {
+                                document.getElementById(`canvas1${index}`).toBlob(blob => {
                                     const url = URL.createObjectURL(blob);
                                     const a = document.createElement('a');
                                     a.href = url;
@@ -168,7 +168,9 @@
                                     a.click();
                                     URL.revokeObjectURL(url);
                                 }, 'image/jpeg');
-                            })
+                            })/*
+                            把他多修好
+                            */
                             .catch(error2 => {
                                 console.error('Error loading images:', error2);
                             });
