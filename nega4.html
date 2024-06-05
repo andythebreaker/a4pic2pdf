@@ -32,6 +32,68 @@
             object-fit: cover;
             cursor: grab;
         }
+
+        /* styles.css */
+        @keyframes rainbow-border {
+            0% {
+                border-image-source: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+            }
+
+            16.67% {
+                border-image-source: linear-gradient(to left, indigo, blue, green, yellow, orange, red, violet);
+            }
+
+            33.33% {
+                border-image-source: linear-gradient(to left, blue, green, yellow, orange, red, violet, indigo);
+            }
+
+            50% {
+                border-image-source: linear-gradient(to left, green, yellow, orange, red, violet, indigo, blue);
+            }
+
+            66.67% {
+                border-image-source: linear-gradient(to left, yellow, orange, red, violet, indigo, blue, green);
+            }
+
+            83.33% {
+                border-image-source: linear-gradient(to left, orange, red, violet, indigo, blue, green, yellow);
+            }
+
+            100% {
+                border-image-source: linear-gradient(to left, red, violet, indigo, blue, green, yellow, orange);
+            }
+        }
+
+        .rainbow-border {
+            border-width: 5px;
+            border-style: solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+            animation: rainbow-border 5s linear infinite;
+        }
+
+        .table-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-width: 800px;
+            /* Adjust as needed */
+        }
+
+        .cell-container {
+            flex: 1 1 200px;
+            /* Adjust width of each cell */
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .cell-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
     </style>
 </head>
 
@@ -40,7 +102,14 @@
     <div class="image-grid" id="imageGrid"></div>
     <!--canvas id="canvas" width="2380" height="3368"></canvas> <?-- A4 dimensions in pixels ---->
     <button onclick="finish(getAllImageSrcs())">New</button>
+    <div class="table-container" id="imageTable">
+        <!-- Images will be dynamically added here -->
+    </div>
     <script>
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
         var PSD = require('psd');
 
         var imgsrcs = [];
@@ -109,7 +178,7 @@
 
                 // Set the id attribute to "canvas1"
                 canvas.id = `canvas1${index}`;
-
+                canvas.classList.add('rainbow-border');
                 // width="2380" height="3368"
                 canvas.width = 2380; // Set your desired width
                 canvas.height = 3368; // Set your desired height
@@ -161,12 +230,40 @@
                                 // You can save the merged image or display it on the page
 
                                 document.getElementById(`canvas1${index}`).toBlob(blob => {
+                                    //TODO: i dont know if it'll fuck up the order
                                     const url = URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = `merged_image${getSafeDateTimeString()}.jpg`;
-                                    a.click();
-                                    URL.revokeObjectURL(url);
+                                    if (isIOS() === false) {
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = `merged_image${getSafeDateTimeString()}.jpg`;
+                                        a.click();
+                                        URL.revokeObjectURL(url);
+                                    } else {
+                                        //remove`canvas1${index}`, then add <img url> 
+                                        const img = document.createElement('img');
+                                        img.src = url;
+                                        img.alt = `merged_image${getSafeDateTimeString()}.jpg`;
+                                        const canvasElement = document.getElementById(`canvas1${index}`);
+                                        canvasElement.parentNode.removeChild(canvasElement);
+
+                                        //img onclick do download
+                                        img.onclick = function () {
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = `merged_image${getSafeDateTimeString()}.jpg`;
+                                            a.click();
+                                            //img add class rainbow-border
+                                            img.classList.add('rainbow-border');
+                                        };
+
+                                        const cellContainer = document.createElement('div');
+                                        cellContainer.classList.add('cell-container');
+                                        cellContainer.appendChild(img);
+
+                                        const tableContainer = document.getElementById('imageTable');
+                                        tableContainer.appendChild(cellContainer);
+
+                                    }
                                 }, 'image/jpeg');
                             })/*
                             把他多修好
