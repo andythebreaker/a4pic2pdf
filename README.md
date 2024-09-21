@@ -1,6 +1,7 @@
 https://www.npmjs.com/package/a4pic2pdf
 
-輸出會強制覆蓋
+- 輸出會強制覆蓋
+- pdfFilename 不能有 .pdf 副檔名
 
 ```js=
 const path = require('path');
