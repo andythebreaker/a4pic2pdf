@@ -56,9 +56,11 @@ async function main(filesToUpload, outputLocationDir, pdfFilename, silent = true
     while (true) {
         //old logic ~ const currentFileCount = await getCurrentFileCount(outputLocationDir, silent);
         if (fs.existsSync(path.join(outputLocationDir, pdfFilename+'.pdf'))) {
+            console.log('PDF 文件已生成。');
             break;
         }
         await page.waitForTimeout(1000); // Wait for 1 second before checking again
+        console.log('等待 PDF 文件生成...');
     }
     await browser.close();
 }

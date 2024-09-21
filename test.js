@@ -26,7 +26,7 @@ describe('a4pic2pdf', function () {
 
     await a4pic2pdf(filesToUpload, outputDir, pdfFilename, true);
     //main logic
-    const outputFile = path.join(outputDir, pdfFilename);
+    const outputFile = path.join(outputDir, pdfFilename+'.pdf');
     expect(fs.existsSync(outputFile)).to.be.true;
 
     const stats = fs.statSync(outputFile);
