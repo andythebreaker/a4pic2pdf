@@ -14,7 +14,7 @@ async function getCurrentFileCount(outputLocationDir, silent) {
     }
 }
 
-async function main(filesToUpload, outputLocationDir, pdfFilename, silent = false) {
+async function main(filesToUpload, outputLocationDir, pdfFilename, silent = true) {
     if (!silent) console.log('開始');
     // 設置初始文件數量
     let initialFileCount = await getCurrentFileCount(outputLocationDir, silent);

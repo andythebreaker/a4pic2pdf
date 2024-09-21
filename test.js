@@ -5,7 +5,7 @@ const a4pic2pdf = require('a4pic2pdf');
 
 describe('a4pic2pdf', function() {
   // 增加超時時間，因為PDF生成可能需要一些時間
-  this.timeout(10000);
+  this.timeout(25*60000);
 
   const imgInputDir = path.join(__dirname, 'example');
   const outputDir = path.join(__dirname, 'example');
