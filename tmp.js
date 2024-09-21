@@ -1,18 +1,22 @@
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 const path = require('path');
 
-async function main(filesToUpload, outputLocationDir, pdfFilename) {
+(async () => {
+  const outputLocationDir = '/path/to/output/dir'; // Change this to your output directory path
+  const pdfFilename = 'example.pdf'; // Change this to the expected PDF filename
+
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
   await page.goto('https://andythebreaker.github.io/a4pic2pdf/');
-  const client = await page.target().createCDPSession()
+  const client = await page.target().createCDPSession();
   await client.send('Page.setDownloadBehavior', {
     behavior: 'allow',
     downloadPath: outputLocationDir,
-  })
-  const inputSelector = 'input[type="file"]';
+  });
 
+  const inputSelector = 'input[type="file"]';
   const [fileInput] = await page.$$(inputSelector);
 
   if (fileInput) {
@@ -35,14 +39,17 @@ async function main(filesToUpload, outputLocationDir, pdfFilename) {
     console.error('File input not found.');
   }
 
-  await page.waitForTimeout(5000); // Wait for PDF generation to complete (adjust as needed)
+  // Check for the new PDF file in the output directory
+  let pdfFilePath;
+  while (true) {
+    const files = fs.readdirSync(outputLocationDir);
+    pdfFilePath = files.find(file => file === pdfFilename);
+    if (pdfFilePath) {
+      console.log(`New PDF file '${pdfFilePath}' found in the output directory.`);
+      break;
+    }
+    await page.waitForTimeout(1000); // Wait for 1 second before checking again
+  }
 
   await browser.close();
-}
-
-const filesToUpload = ['./img/1.jpg', './img/2.jpg'];
-const outputLocationDir = path.join(process.cwd(), 'output'); // Change this to your desired output location directory
-const pdfFilename = '000ftitl'; // Change this to your desired PDF filename
-
-main(filesToUpload, outputLocationDir, pdfFilename);
-  
+})();
