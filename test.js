@@ -9,7 +9,7 @@ describe('a4pic2pdf', function () {
 
   const imgInputDir = path.join(__dirname, 'example');
   const outputDir = path.join(__dirname, 'example');
-  const pdfFilename = 'test_output.pdf';
+  const pdfFilename = 'test_output';
 
   before(function () {
     // 確保測試輸出目錄存在

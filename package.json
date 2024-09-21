@@ -27,6 +27,6 @@
     "puppeteer": "^21.4.1"
   },
   "devDependencies": {
-    "a4pic2pdf": "^2.1.2"
+    "a4pic2pdf": "^2.2.0"
   }
 }
