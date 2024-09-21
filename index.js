@@ -18,7 +18,7 @@ async function main(filesToUpload, outputLocationDir, pdfFilename) {
     console.log('start')
     // Set the initial file count
     let initialFileCount = await getCurrentFileCount(outputLocationDir);
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
     await page.goto('https://andythebreaker.github.io/a4pic2pdf/');
