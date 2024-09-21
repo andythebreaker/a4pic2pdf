@@ -24,7 +24,7 @@ describe('a4pic2pdf', function () {
       .filter(file => allowedExtensions.includes(path.extname(file).toLowerCase()))
       .map(file => path.join(imgInputDir, file));
 
-    await a4pic2pdf(filesToUpload, outputDir, pdfFilename);
+    await a4pic2pdf(filesToUpload, outputDir, pdfFilename, false);
     //main logic
     const outputFile = path.join(outputDir, pdfFilename);
     expect(fs.existsSync(outputFile)).to.be.true;

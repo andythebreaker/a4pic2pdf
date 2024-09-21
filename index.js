@@ -55,7 +55,7 @@ async function main(filesToUpload, outputLocationDir, pdfFilename, silent = true
     let pdfFilePath;
     while (true) {
         //old logic ~ const currentFileCount = await getCurrentFileCount(outputLocationDir, silent);
-        if (!fs.existsSync(path.join(outputLocationDir, pdfFilename))) {
+        if (fs.existsSync(path.join(outputLocationDir, pdfFilename))) {
             break;
         }
         await page.waitForTimeout(1000); // Wait for 1 second before checking again
