@@ -1,6 +1,6 @@
 {
   "name": "a4pic2pdf",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "gen. pdf from pic.s input by usr.",
   "main": "index.js",
   "scripts": {
