@@ -53,11 +53,28 @@ async function main(filesToUpload, outputLocationDir, pdfFilename, silent = true
 
     // Check for the new PDF file in the output directory
     let pdfFilePath;
+    const startTime = Date.now();
+    let retried = false;
     while (true) {
         //old logic ~ const currentFileCount = await getCurrentFileCount(outputLocationDir, silent);
         if (fs.existsSync(path.join(outputLocationDir, pdfFilename+'.pdf'))) {
             console.log('PDF 文件已生成。');
             break;
+        }
+        // 新增：檢查是否超過一小時
+        const elapsed = (Date.now() - startTime) / 1000;
+        if (elapsed > 3600 && !retried) {
+            const pdfPath = path.join(outputLocationDir, pdfFilename+'.pdf');
+            if (fs.existsSync(pdfPath)) {
+                fs.unlinkSync(pdfPath);
+                if (!silent) console.log('等待超過一小時，已刪除 PDF 檔案，準備重新執行。');
+            } else {
+                if (!silent) console.log('等待超過一小時，PDF 檔案不存在，準備重新執行。');
+            }
+            await browser.close();
+            retried = true;
+            // 重新執行 main，僅重試一次
+            return await main(filesToUpload, outputLocationDir, pdfFilename, silent);
         }
         await page.waitForTimeout(1000); // Wait for 1 second before checking again
         console.log('等待 PDF 文件生成...');
